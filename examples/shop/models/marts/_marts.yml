@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: orders
+    description: Completed orders. Built as a table in MARTS.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+  - name: orders_summary
+    description: |
+      View in MARTS that reads STAGING. Promotion rewrites this view so
+      production points at STAGING, not at the build schema.
+    columns:
+      - name: status
+        tests:
+          - not_null
+      - name: order_count
+        tests:
+          - not_null

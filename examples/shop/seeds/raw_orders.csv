@@ -1,0 +1,4 @@
+order_id,status,amount
+1,completed,10
+2,pending,20
+3,completed,5

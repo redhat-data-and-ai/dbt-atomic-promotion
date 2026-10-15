@@ -1,0 +1,19 @@
+quoting:
+  database: false
+  schema: false
+  identifier: false
+
+vars:
+  promotion_log_schema: promotion_logs
+  promotion_skip_schemas: []
+  cleanup_build_schemas_to_keep: 5
+  promotion_verbose: false
+
+models:
+  my_project:
+    staging:
+      +schema: staging
+    intermediate:
+      +schema: intermediate
+    marts:
+      +schema: marts

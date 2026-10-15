@@ -1,0 +1,29 @@
+# Standalone dbt package: versioned schema builds and atomic promotion on Snowflake.
+name: atomic_promotion
+version: 0.2.0
+config-version: 2
+require-dbt-version: ">=1.6.0"
+profile: atomic_promotion
+
+macro-paths: ["macros"]
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+log-path: "logs"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+vars:
+  # Audit tables are created here. Do not also build dbt models into this schema.
+  promotion_log_schema: promotion_logs
+  # Schema names (any case) that prepare/promote/rollback ignore.
+  promotion_skip_schemas: []
+  # How many promoted versions to keep when cleanup_build_schemas runs.
+  cleanup_build_schemas_to_keep: 5
+  # Extra log lines, including SQL. PROMOTION_VERBOSE=true also turns this on.
+  promotion_verbose: false
+  # Optional GitLab CI isolation. Off unless a project opts in.
+  enable_mr_isolation: false
+  mr_isolation_targets: ["ci"]

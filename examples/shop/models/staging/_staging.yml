@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: One row per order from the raw seed. Built as a view in STAGING.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["completed", "pending"]
+      - name: amount
+        tests:
+          - not_null

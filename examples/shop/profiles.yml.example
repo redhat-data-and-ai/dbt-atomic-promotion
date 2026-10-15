@@ -1,0 +1,13 @@
+shop:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "<org>-<account>"
+      user: "<user>"
+      role: "<role that owns the shop schemas>"
+      warehouse: "<warehouse>"
+      database: "<database>"
+      schema: analytics
+      threads: 4
+      authenticator: externalbrowser
