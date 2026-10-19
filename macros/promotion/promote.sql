@@ -144,7 +144,7 @@
   {% if promoted | length == 0 %}
     {{ return('') }}
   {% endif %}
-  {{ log("Phase 2: swap production schemas. If this step stops halfway, use the recovery steps in docs/guide.md before promoting again.", info=true) }}
+  {{ log("Phase 2: swapping production schemas. If this stops halfway, do not run promote_all again.", info=true) }}
   {% set batch_sql %}
     {% for item in promoted %}
       {% if item['prod_existed'] %}
@@ -197,13 +197,7 @@
 
 
 {% macro promote_all(version=none, schemas=none, job_name=none) %}
-  {#-
-    Promote every selected build schema together.
-
-    Phase 1 prepares swap schemas and checks grants.
-    Phase 2 swaps production with those schemas.
-    Phase 3 renames the old production schemas to <schema>_PREVIOUS.
-  -#}
+  {#- Phase 1 checks grants. Phase 2 swaps. Phase 3 renames the old schemas to <SCHEMA>_PREVIOUS. -#}
   {% if not execute %}
     {{ return('') }}
   {% endif %}

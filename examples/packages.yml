@@ -1,7 +1,0 @@
-packages:
-  # While developing, point local at this folder.
-  - local: /path/to/dbt-atomic-promotion
-
-  # After the package is published, pin a tag instead:
-  # - git: "https://github.com/<owner>/dbt-atomic-promotion.git"
-  #   revision: v0.2.0

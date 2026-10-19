@@ -1,9 +1,5 @@
 {% macro prepare_build_schemas(schemas=none) %}
-  {#-
-    Clone each production schema to build_<schema>_<version>.
-    Creates an empty build schema when production does not exist yet.
-    Run this once per version. Running it again replaces that version's build schemas.
-  -#}
+  {#- Clone production into BUILD_<SCHEMA>_<VERSION>. Running again replaces that version. -#}
   {% if not execute %}
     {{ return('') }}
   {% endif %}
