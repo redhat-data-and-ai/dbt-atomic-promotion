@@ -1,8 +1,5 @@
 {% macro promotion_model_schemas() %}
-  {#-
-    Schemas used by enabled models, seeds, and snapshots in the selected packages.
-    Defaults to the root project. Override with var promotion_packages.
-  -#}
+  {#- Schemas from enabled models, seeds, and snapshots. Defaults to the root project. -#}
   {% if not execute %}
     {{ return([]) }}
   {% endif %}

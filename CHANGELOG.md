@@ -3,12 +3,13 @@
 ## Unreleased
 
 - Call package macros by name from `promotion_schema_name`, so a root `generate_schema_name` wrapper can resolve them at parse time.
+- Keep the user docs to the README, the macro reference, and the shop example.
 
 ## 0.2.0
 
 - Check grants by privilege and grantee. A missing grant stops promotion before the swap. Extra ownership on the swap schema does not.
 - Copy future grants for tables, views, external tables, and materialized views. Other future-grant types stop promotion with the type named in the error.
-- Add a ten-step quickstart, a shop example project, a macro reference, and the engineering standard.
+- Add a shop example project and a macro reference.
 
 ## 0.1.0
 

@@ -1,9 +1,5 @@
 {% macro cleanup_build_schemas(num_to_keep=none, dry_run=false) %}
-  {#-
-    Drop build schemas from promoted versions older than the newest num_to_keep versions.
-    Production schemas and <schema>_PREVIOUS backups are left in place.
-    Build schemas that were never promoted are left in place.
-  -#}
+  {#- Drop BUILD_ schemas from promoted versions outside the retention window. -#}
   {% if not execute %}
     {{ return('') }}
   {% endif %}
