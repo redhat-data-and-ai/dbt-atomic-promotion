@@ -4,6 +4,7 @@
 
 - Call package macros by name from `promotion_schema_name`, so a root `generate_schema_name` wrapper can resolve them at parse time.
 - Keep the user docs to the README, the macro reference, and the shop example.
+- Document the Airflow task sequence: one version, then prepare, build, and promote, with no retry on promote.
 
 ## 0.2.0
 

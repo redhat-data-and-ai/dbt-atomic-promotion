@@ -78,6 +78,72 @@ Rollback does nothing unless every selected schema has `<SCHEMA>_PREVIOUS`. Clea
 
 Any job runner can call the same three commands with one version. Do not retry `promote_all`. Keep a single active run.
 
+## Airflow
+
+Use one DAG run's logical time as the version, and pass that same value to prepare, `dbt build`, and `promote_all`. `ts_nodash` is `YYYYMMDDTHHMMSS`. The package stores the `T` as an underscore.
+
+`dbt build` has to receive `deployment_version`. A seed task that omits it writes into the production schemas.
+
+Set `max_active_runs` to 1 so two runs cannot swap the same schemas. Prepare and build may retry. Set `retries` to 0 on `promote_all`. A second attempt after phase 2 has started can swap a schema that already moved. If that task fails, follow [If promote stops](#if-promote-stops) before clearing it. Run cleanup only after promote succeeds.
+
+```python
+from datetime import datetime
+
+from airflow.decorators import dag
+from airflow.operators.bash import BashOperator
+
+DBT = "cd /path/to/dbt_project && dbt"
+
+
+@dag(
+    dag_id="promote_nightly",
+    start_date=datetime(2026, 1, 1),
+    schedule="0 6 * * *",
+    catchup=False,
+    max_active_runs=1,
+    default_args={"retries": 1},
+    tags=["dbt", "promotion"],
+)
+def promote_nightly():
+    prepare = BashOperator(
+        task_id="prepare_build_schemas",
+        bash_command=(
+            f"{DBT} run-operation atomic_promotion.prepare_build_schemas "
+            "--vars '{deployment_version: 1_0_0_{{ ts_nodash }}}'"
+        ),
+    )
+    build = BashOperator(
+        task_id="dbt_build",
+        bash_command=(
+            f"{DBT} build "
+            "--vars '{deployment_version: 1_0_0_{{ ts_nodash }}}'"
+        ),
+    )
+    promote = BashOperator(
+        task_id="promote_all",
+        retries=0,
+        bash_command=(
+            f"{DBT} run-operation atomic_promotion.promote_all "
+            "--args '{version: 1_0_0_{{ ts_nodash }}, job_name: nightly}'"
+        ),
+    )
+    cleanup = BashOperator(
+        task_id="cleanup_build_schemas",
+        bash_command=(
+            f"{DBT} run-operation atomic_promotion.cleanup_build_schemas "
+            "--args '{num_to_keep: 5}'"
+        ),
+    )
+    prepare >> build >> promote >> cleanup
+
+
+promote_nightly()
+```
+
+Point `DBT` at the project on the worker image. That image needs dbt-snowflake, and `dbt deps` already run. Quoting in the project stays off.
+
+Cosmos can own the tasks instead of bash. The rendered command still needs the same `--vars` on prepare and on `dbt build`, and the same `version` and `job_name` on `atomic_promotion.promote_all`. Leave retries at 0 on that task.
+
 ## If promote stops
 
 **Phase 1.** Production was not swapped. A failed grant check drops the swap schemas from that attempt. Drop any `<SCHEMA>_SWAP` left behind, then prepare and promote again.
