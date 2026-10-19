@@ -16,7 +16,7 @@ Run the [shop example](examples/shop/README.md). Macro arguments are in the [ref
 
 ```yaml
 packages:
-  - git: "https://github.com/<owner>/dbt-atomic-promotion.git"
+  - git: "https://github.com/redhat-data-and-ai/dbt-atomic-promotion.git"
     revision: v0.2.0
 ```
 
