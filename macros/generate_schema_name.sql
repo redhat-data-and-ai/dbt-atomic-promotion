@@ -11,7 +11,11 @@
     from a root wrapper. See examples/generate_schema_name.sql.
   -#}
   {% set base_schema = custom_schema_name | trim if custom_schema_name else target.schema %}
-  {% do promotion_assert_identifier(base_schema, 'schema') %}
+  {#-
+    This macro runs while dbt is parsing a model in the root project.
+    Unqualified names resolve in that project, so package macros need the prefix.
+  -#}
+  {% do atomic_promotion.promotion_assert_identifier(base_schema, 'schema') %}
   {% set upper_schema = base_schema | upper %}
   {% if upper_schema.startswith('BUILD_') or upper_schema.endswith('_SWAP') or upper_schema.endswith('_PREVIOUS') or '_BACKUP_' in upper_schema %}
     {{ exceptions.raise_compiler_error("Schema '" ~ base_schema ~ "' uses a name reserved by atomic promotion (BUILD_, _SWAP, _PREVIOUS, _BACKUP_).") }}
@@ -35,8 +39,8 @@
 
   {% set raw_version = var('deployment_version', none) %}
   {% set materialization = node.config.materialized if node is not none else none %}
-  {% if raw_version is not none and materialization in promotion_versioned_materializations() %}
-    {% set version = normalize_deployment_version(raw_version) %}
+  {% if raw_version is not none and materialization in atomic_promotion.promotion_versioned_materializations() %}
+    {% set version = atomic_promotion.normalize_deployment_version(raw_version) %}
     {% set build_schema = 'BUILD_' ~ (base_schema | upper) ~ '_' ~ version %}
     {% if build_schema | length > 255 %}
       {{ exceptions.raise_compiler_error("Refusing to use schema '" ~ build_schema ~ "' because it is longer than 255 characters.") }}

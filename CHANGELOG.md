@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Call package macros by name from `promotion_schema_name`, so a root `generate_schema_name` wrapper can resolve them at parse time.
+
 ## 0.2.0
 
 - Check grants by privilege and grantee. A missing grant stops promotion before the swap. Extra ownership on the swap schema does not.
